@@ -20,6 +20,8 @@ namespace RepositorioGitHub.App.Controllers
         {
             
             var model = _business.Get();
+
+            
             if (model.IsValid)
             {
                 TempData["success"] = model.Message;
@@ -32,9 +34,18 @@ namespace RepositorioGitHub.App.Controllers
             return View(model);
         }
 
-        public ActionResult Details(long id)
+        public ActionResult Details(GitHubRepositoryViewModel obj, string owner)
         {
-         
+            //Nao ha necessidade de nova consulta, visto que os dados já foram obtidos na consulta anterior. 
+
+            var m = new ActionResult<GitHubRepositoryViewModel>();
+            obj.Owner = new Owner();
+            obj.Owner.Login = owner;
+            m.Result = obj;
+            
+            m.Message = "Mess";
+
+            /*
             var model = _business.GetById(id);
             if (model.IsValid)
             {
@@ -44,8 +55,8 @@ namespace RepositorioGitHub.App.Controllers
             {
                 TempData["warning"] = model.Message;
             }
-
-            return View(model);
+            */
+            return View(m);
         }
 
         [HttpPost]
@@ -134,7 +145,19 @@ namespace RepositorioGitHub.App.Controllers
         {     
             ActionResult< FavoriteViewModel> model = new ActionResult<FavoriteViewModel>();
 
-            if(string.IsNullOrEmpty(owner) && string.IsNullOrEmpty(name) && string.IsNullOrEmpty(language)
+
+            {
+                model.IsValid = false;
+                model.Message = "Não foi possivel realizar esta operação";
+
+                TempData["warning"] = model.Message;
+
+
+                return  View("Details");
+            }
+
+
+            if (string.IsNullOrEmpty(owner) && string.IsNullOrEmpty(name) && string.IsNullOrEmpty(language)
                 && string.IsNullOrEmpty(lastUpdat)&& string.IsNullOrEmpty(description))
             {
                 model.IsValid = false;

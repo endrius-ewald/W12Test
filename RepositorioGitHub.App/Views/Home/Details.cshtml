@@ -24,6 +24,10 @@
                 <td>@Model.Result.Description</td>
                 <td>@Model.Result.Language</td>
                 <td>@Model.Result.UpdatedAt</td>
+                <td>@Model.Result.Owner.Login</td>
+                <td>
+                    @Html.ActionLink("Fav", "FavoriteSave", new { owner = Model.Result.Owner.Login })
+                </td>
             </tr>
           
         </tbody>

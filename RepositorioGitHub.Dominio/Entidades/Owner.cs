@@ -63,5 +63,10 @@ namespace RepositorioGitHub.Dominio
         [JsonProperty("site_admin")]
         public bool SiteAdmin { get; set; }
 
+
+        public override string ToString()
+        {
+            return Login;
+        }
     }
 }

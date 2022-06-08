@@ -3,6 +3,8 @@ using RepositorioGitHub.Dominio;
 using RepositorioGitHub.Dominio.Interfaces;
 using RepositorioGitHub.Infra.Contract;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace RepositorioGitHub.Business
 {
@@ -18,7 +20,49 @@ namespace RepositorioGitHub.Business
 
         public ActionResult<GitHubRepositoryViewModel> Get()
         {
+            Console.WriteLine("Call get no index");
+
+            var actRes = new ActionResult<GitHubRepositoryViewModel>();
+            actRes.Results = new List<GitHubRepositoryViewModel>();
+
+            try
+            {
+                var apiRes = _gitHubApi.GetRepository("endrius-ewald");
+
+                //Maping from Model to ViewModel
+                actRes.IsValid = true;
+                actRes.Message = apiRes.Message;
+
+                foreach (var item in apiRes.Results)
+                {
+                    actRes.Results.Add(convertModelToViewModel(item));
+                }
+
+                return actRes;
+ 
+            }catch (Exception e) {
+                actRes.IsValid = false;
+                actRes.Message = e.Message;
+            }
+
+
             return new ActionResult<GitHubRepositoryViewModel>();
+        }
+
+        private GitHubRepositoryViewModel convertModelToViewModel(GitHubRepository input)
+        {
+            var ret = new GitHubRepositoryViewModel();
+
+            ret.Id = input.Id;
+            ret.Name = input.Name;
+            ret.FullName = input.FullName;
+            ret.Owner = input.Owner;
+            ret.Url = input.Url;
+            ret.Description = input.Description;
+            ret.Language = input.Language;
+            ret.UpdatedAt = input.UpdatedAt;
+
+            return ret;
         }
 
         public ActionResult<GitHubRepositoryViewModel> GetById(long id)
