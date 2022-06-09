@@ -25,9 +25,18 @@
                 <td>@Model.Result.Language</td>
                 <td>@Model.Result.UpdatedAt</td>
                 <td>@Model.Result.Owner.Login</td>
-                <td>
-                    @Html.ActionLink("Fav", "FavoriteSave", new { owner = Model.Result.Owner.Login })
-                </td>
+
+                @if (!Model.Result.isFavorite)
+                {
+                    <td>
+                        @Html.ActionLink("Favorite", "FavoriteSave", new { id = Model.Result.Id })
+                    </td>
+                }else
+                {
+                    <td>
+                        @Html.ActionLink("Unfavorite", "FavoriteSave", new { id = Model.Result.Id })
+                    </td>
+                }
             </tr>
           
         </tbody>

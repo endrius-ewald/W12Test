@@ -43,7 +43,6 @@ namespace RepositorioGitHub.Infra.ApiGitHub
 
                 var act = new ActionResult<GitHubRepository>();
                 act.Results = hubs;
-                act.IsValid = true;
                 act.Message = "Sucessfully retrieved users repositories";
 
                 return act;
@@ -53,6 +52,26 @@ namespace RepositorioGitHub.Infra.ApiGitHub
                 throw new Exception("Cannot get retrieve users repositories.");
             }
 
+        }
+        public ActionResult<GitHubRepository> GetRepositoryById(long id)
+        {
+            HttpResponseMessage res = client.GetAsync("repositories/"+id).Result;
+
+            if (res.IsSuccessStatusCode)
+            {
+                var jsonData = res.Content.ReadAsStringAsync().Result;
+                var hub = JsonConvert.DeserializeObject<GitHubRepository>(jsonData);
+
+                var act = new ActionResult<GitHubRepository>();
+                act.Result = hub;
+                act.Message = "Sucessfully retrieved repositoy "+id;
+
+                return act;
+            }
+            else
+            {
+                throw new Exception("Cannot get retrieve "+id+" repository.");
+            }
         }
 
         public ActionResult<RepositoryModel> GetRepositoryByName(string name)

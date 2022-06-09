@@ -12,6 +12,8 @@ namespace RepositorioGitHub.App.Controllers
     public class HomeController : Controller
     {
         private readonly IGitHubApiBusiness _business;
+        private static bool _isFavorite {get; set;}
+
         public HomeController(IGitHubApiBusiness business)
         {
             _business = business;
@@ -34,19 +36,13 @@ namespace RepositorioGitHub.App.Controllers
             return View(model);
         }
 
-        public ActionResult Details(GitHubRepositoryViewModel obj, string owner)
+        public ActionResult Details(int id)
         {
-            //Nao ha necessidade de nova consulta, visto que os dados já foram obtidos na consulta anterior. 
-
-            var m = new ActionResult<GitHubRepositoryViewModel>();
-            obj.Owner = new Owner();
-            obj.Owner.Login = owner;
-            m.Result = obj;
             
-            m.Message = "Mess";
-
-            /*
             var model = _business.GetById(id);
+            model.Result.isFavorite = _isFavorite;
+
+           
             if (model.IsValid)
             {
                 TempData["success"] = model.Message;
@@ -55,8 +51,8 @@ namespace RepositorioGitHub.App.Controllers
             {
                 TempData["warning"] = model.Message;
             }
-            */
-            return View(m);
+            
+            return View(model);
         }
 
         [HttpPost]
@@ -141,9 +137,9 @@ namespace RepositorioGitHub.App.Controllers
         }
 
         [HttpGet]
-        public ActionResult FavoriteSave(string owner, string name, string language, string lastUpdat, string description)
+        public ActionResult FavoriteSave(long id, string owner, string name, string language, string lastUpdat, string description)
         {     
-            ActionResult< FavoriteViewModel> model = new ActionResult<FavoriteViewModel>();
+            ActionResult< GitHubRepositoryViewModel> model = new ActionResult<GitHubRepositoryViewModel>();
 
 
             {
@@ -152,8 +148,11 @@ namespace RepositorioGitHub.App.Controllers
 
                 TempData["warning"] = model.Message;
 
+                _isFavorite = true;
 
-                return  View("Details");
+
+
+                return  RedirectToAction("Details/"+id);
             }
 
 

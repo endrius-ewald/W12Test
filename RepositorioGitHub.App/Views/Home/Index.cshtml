@@ -46,7 +46,7 @@
 
                         <td>
                             <!-- @Html.ActionLink("Detalhe", "Details", new { obj = @item, owner = item.Owner.Login } )-->
-                            @Html.ActionLink("Detalhe", "Details", @item)
+                            @Html.ActionLink("Detalhe", "Details", new { id = item.Id })
                         </td>
                     </tr>
                 }

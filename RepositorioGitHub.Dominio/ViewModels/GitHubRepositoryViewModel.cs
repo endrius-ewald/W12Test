@@ -30,7 +30,7 @@ namespace RepositorioGitHub.Dominio
        
         public string Language { get; set; }
 
-        
+        public bool isFavorite { get; set; }
         
     }
 }

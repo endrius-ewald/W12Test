@@ -43,10 +43,34 @@ namespace RepositorioGitHub.Business
             }catch (Exception e) {
                 actRes.IsValid = false;
                 actRes.Message = e.Message;
+
+                return actRes;
+            }
+        }
+
+        public ActionResult<GitHubRepositoryViewModel> GetById(long id)
+        {
+            var actRes = new ActionResult<GitHubRepositoryViewModel>();
+            try
+            {
+                var apiRes = _gitHubApi.GetRepositoryById(id);
+
+                actRes.IsValid = true;
+                actRes.Message = apiRes.Message;
+                actRes.Result = convertModelToViewModel(apiRes.Result);
+
+                return actRes;
+
+
+            }
+            catch (Exception e)
+            {
+                actRes.IsValid = false;
+                actRes.Message = e.Message;
+
+                return actRes;
             }
 
-
-            return new ActionResult<GitHubRepositoryViewModel>();
         }
 
         private GitHubRepositoryViewModel convertModelToViewModel(GitHubRepository input)
@@ -65,10 +89,6 @@ namespace RepositorioGitHub.Business
             return ret;
         }
 
-        public ActionResult<GitHubRepositoryViewModel> GetById(long id)
-        {
-            return new ActionResult<GitHubRepositoryViewModel>();
-        }
 
         public ActionResult<RepositoryViewModel> GetByName(string name)
         {
