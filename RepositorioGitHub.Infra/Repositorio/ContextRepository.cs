@@ -5,28 +5,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Entity;
+using System.Diagnostics;
+
 
 namespace RepositorioGitHub.Infra.Repositorio
 {
-    public class ContextRepository : IContextRepository
+    public class ContextRepository : DbContext, IContextRepository
     {
-        static ISet<Favorite> db = new HashSet<Favorite>();
+        //static ISet<Favorite> db = new HashSet<Favorite>();
+
+        public DbSet<Favorite> fav { get; set;}
 
         public bool ExistsByCheckAlready(Favorite favorite)
         {
-            return db.Contains(favorite);
+            return false;
         }
 
         public List<Favorite> GetAll()
         {
-            return db.ToList();
-
-            return new List<Favorite>();
+            return fav.ToList();
         }
 
         public bool Insert(Favorite favorite)
         {
-            return db.Add(favorite);
+            fav.Add(favorite);
+            int r = this.SaveChanges();
+            return r > 0 ? true : false;
         }
+        
     }
 }

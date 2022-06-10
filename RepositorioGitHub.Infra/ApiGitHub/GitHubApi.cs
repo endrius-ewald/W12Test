@@ -15,9 +15,6 @@ namespace RepositorioGitHub.Infra.ApiGitHub
     public class GitHubApi : IGitHubApi
     {
 
-        //readonly RestClient _client = new RestClient("https://api.github.com/users/endrius-ewald");
-        readonly RestClient _client = new RestClient("https://api.github.com");
-
         private HttpClient client = new HttpClient();
 
         public GitHubApi()

@@ -108,6 +108,7 @@ namespace RepositorioGitHub.Business
                 var model = new RepositoryViewModel();
                 model.Repositories = apiRes.Result.Repositories;
                 actRes.Result = model;
+                actRes.Result.TotalCount = apiRes.Result.TotalCount;
 
                 actRes.IsValid = true;
                 actRes.Message = apiRes.Message;

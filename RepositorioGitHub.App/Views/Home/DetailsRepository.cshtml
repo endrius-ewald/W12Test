@@ -32,9 +32,20 @@
                 <td data-language="@Model.Result.Language">@Model.Result.Language</td>
                 <td data-data="@Model.Result.UpdatedAt">@Model.Result.UpdatedAt</td>
                 <td data-owner="@Model.Result.Owner.Login">@Model.Result.Owner.Login</td>
+                @if (!Model.Result.isFavorite)
+                {
+
                 <td>
-                    <button class="btn btn-primary btn-favorito"> Marcar Como Favorito </button>
+                    <button class="btn btn-primary btn-favorito" data-id="@Model.Result.Id"> Marcar Como Favorito </button>
                 </td>
+
+                }
+                else
+                {
+                <td>
+                    Ja é favorito.
+                </td>
+                }
             </tr>
         }
 
@@ -54,7 +65,8 @@
     $(function () {
         $(document).on('click', '.btn-favorito', function (e) {
             e.preventDefault;
-          
+
+            var id = $(this).closest('tr').find('button').data('id');
             var name = $(this).closest('tr').find('td[data-name]').data('name');
             var owner = $(this).closest('tr').find('td[data-owner]').data('owner');
             var language = $(this).closest('tr').find('td[data-language]').data('language');
@@ -68,6 +80,7 @@
                     async: true,
                     url:  "@Url.Action("FavoriteSave","Home")",
                     data: {
+                        id: id,
                         owner: owner,
                         name: name,
                         language: language,

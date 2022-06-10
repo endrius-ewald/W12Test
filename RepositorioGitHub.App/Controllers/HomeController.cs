@@ -68,6 +68,7 @@ namespace RepositorioGitHub.App.Controllers
             {
 
                 model = _business.GetRepository(login, id);
+                //model.Result.isFavorite = _business.existFavorite(id); //NotImplemented
 
                 if (model.IsValid)
                 {
@@ -139,7 +140,7 @@ namespace RepositorioGitHub.App.Controllers
         }
 
         [HttpGet]
-        public ActionResult FavoriteSave(string owner, string name, string language, string lastUpdat, string description)
+        public ActionResult FavoriteSave(long id, string owner, string name, string language, string lastUpdat, string description)
         {     
             ActionResult< GitHubRepositoryViewModel> model = new ActionResult<GitHubRepositoryViewModel>();
 
@@ -158,9 +159,10 @@ namespace RepositorioGitHub.App.Controllers
             }
             else
             {
-                
-                FavoriteViewModel view = new FavoriteViewModel() 
-                { 
+
+                FavoriteViewModel view = new FavoriteViewModel()
+                {
+                    Id = id,
                     Description = description,
                     Language = language,
                     Owner = owner,
