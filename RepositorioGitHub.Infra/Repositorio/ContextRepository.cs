@@ -10,19 +10,23 @@ namespace RepositorioGitHub.Infra.Repositorio
 {
     public class ContextRepository : IContextRepository
     {
+        static ISet<Favorite> db = new HashSet<Favorite>();
+
         public bool ExistsByCheckAlready(Favorite favorite)
         {
-            return false;
+            return db.Contains(favorite);
         }
 
         public List<Favorite> GetAll()
         {
+            return db.ToList();
+
             return new List<Favorite>();
         }
 
         public bool Insert(Favorite favorite)
         {
-            return true;
+            return db.Add(favorite);
         }
     }
 }

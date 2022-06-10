@@ -10,6 +10,8 @@ namespace RepositorioGitHub.Dominio.Interfaces
     {
         ActionResult<GitHubRepository> GetRepository(string owner);
         ActionResult<GitHubRepository> GetRepositoryById(long id);     
-        ActionResult<RepositoryModel> GetRepositoryByName(string name);     
+        ActionResult<RepositoryModel> GetRepositoryByName(string name);
+        ActionResult<RepositoryModel> GetRepositoriesByName(string name);
+
     }
 }

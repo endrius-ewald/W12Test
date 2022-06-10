@@ -32,7 +32,6 @@ namespace RepositorioGitHub.Infra.ApiGitHub
         public ActionResult<GitHubRepository> GetRepository(string owner)
         {
 
-            Debug.WriteLine("aaaa");
 
             HttpResponseMessage res = client.GetAsync("users/"+owner+"/repos").Result;
 
@@ -72,6 +71,30 @@ namespace RepositorioGitHub.Infra.ApiGitHub
             {
                 throw new Exception("Cannot get retrieve "+id+" repository.");
             }
+        }
+
+        public ActionResult<RepositoryModel> GetRepositoriesByName(string name)
+        {
+            HttpResponseMessage res = client.GetAsync("search/repositories?q=" + name).Result;
+
+            if (res.IsSuccessStatusCode)
+            {
+                Debug.WriteLine("search sucess");
+
+                var jsonData = res.Content.ReadAsStringAsync().Result;
+                var hubs = JsonConvert.DeserializeObject<RepositoryModel>(jsonData);
+
+                var act = new ActionResult<RepositoryModel>();
+                act.Result = hubs;
+                act.Message = "Sucessfully retrieved some repositories";
+
+                return act;
+            }
+            else
+            {
+                throw new Exception("Cannot get retrieve some repositories based on query " + name);
+            }
+
         }
 
         public ActionResult<RepositoryModel> GetRepositoryByName(string name)

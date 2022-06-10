@@ -20,8 +20,6 @@ namespace RepositorioGitHub.Business
 
         public ActionResult<GitHubRepositoryViewModel> Get()
         {
-            Console.WriteLine("Call get no index");
-
             var actRes = new ActionResult<GitHubRepositoryViewModel>();
             actRes.Results = new List<GitHubRepositoryViewModel>();
 
@@ -30,13 +28,13 @@ namespace RepositorioGitHub.Business
                 var apiRes = _gitHubApi.GetRepository("endrius-ewald");
 
                 //Maping from Model to ViewModel
-                actRes.IsValid = true;
-                actRes.Message = apiRes.Message;
-
                 foreach (var item in apiRes.Results)
                 {
                     actRes.Results.Add(convertModelToViewModel(item));
                 }
+
+                actRes.IsValid = true;
+                actRes.Message = apiRes.Message;
 
                 return actRes;
  
@@ -51,17 +49,18 @@ namespace RepositorioGitHub.Business
         public ActionResult<GitHubRepositoryViewModel> GetById(long id)
         {
             var actRes = new ActionResult<GitHubRepositoryViewModel>();
+
             try
             {
                 var apiRes = _gitHubApi.GetRepositoryById(id);
 
-                actRes.IsValid = true;
-                actRes.Message = apiRes.Message;
+                //Maping from Model to ViewModel
                 actRes.Result = convertModelToViewModel(apiRes.Result);
 
+                actRes.IsValid = true;
+                actRes.Message = apiRes.Message;
+
                 return actRes;
-
-
             }
             catch (Exception e)
             {
@@ -72,6 +71,13 @@ namespace RepositorioGitHub.Business
             }
 
         }
+
+
+        public ActionResult<GitHubRepositoryViewModel> GetRepository(string owner, long id)
+        {
+            return GetById(id);
+        }
+
 
         private GitHubRepositoryViewModel convertModelToViewModel(GitHubRepository input)
         {
@@ -92,22 +98,110 @@ namespace RepositorioGitHub.Business
 
         public ActionResult<RepositoryViewModel> GetByName(string name)
         {
-            return new ActionResult<RepositoryViewModel>();
+            var actRes = new ActionResult<RepositoryViewModel>();
+
+            try
+            {
+                var apiRes = _gitHubApi.GetRepositoriesByName(name);
+
+                //Maping from Model to ViewModel
+                var model = new RepositoryViewModel();
+                model.Repositories = apiRes.Result.Repositories;
+                actRes.Result = model;
+
+                actRes.IsValid = true;
+                actRes.Message = apiRes.Message;
+
+                return actRes;
+
+            }
+            catch (Exception e)
+            {
+                actRes.IsValid = false;
+                actRes.Message = e.Message;
+
+                return actRes;
+            }
+
         }
 
         public ActionResult<FavoriteViewModel> GetFavoriteRepository()
         {
-            return new ActionResult<FavoriteViewModel>();
-        }
 
-        public ActionResult<GitHubRepositoryViewModel> GetRepository(string owner, long id)
-        {
-            return new ActionResult<GitHubRepositoryViewModel>();
+            var actRes = new ActionResult<FavoriteViewModel>();
+            actRes.Results = new List<FavoriteViewModel>();
+
+            try
+            {
+                var dbRes = _context.GetAll();
+
+                //Maping from Model to ViewModel
+                foreach (var item in dbRes)
+                {
+                    actRes.Results.Add(convertFavorite(item));
+                }
+
+                actRes.IsValid = true;
+                actRes.Message = "Sucessfull retrieved favorites";
+
+                return actRes;
+
+            }
+            catch (Exception e)
+            {
+                actRes.IsValid = false;
+                actRes.Message = e.Message;
+
+                return actRes;
+            }
+
         }
 
         public ActionResult<FavoriteViewModel> SaveFavoriteRepository(FavoriteViewModel view)
         {
-            return new ActionResult<FavoriteViewModel>();
+            var actRes = new ActionResult<FavoriteViewModel>();
+
+            Favorite aux = new Favorite();
+            //MapViewModeltoModel
+            {
+                aux.Id = view.Id;
+                aux.Description = view.Description;
+                aux.Language = view.Language;
+                aux.UpdateLast = view.UpdateLast;
+                aux.Owner = view.Owner;
+                aux.Name = view.Name;
+
+            }
+
+            if (_context.Insert(aux))
+            {
+                actRes.IsValid = true;
+                actRes.Message = "Favorito salvo com sucesso.";
+            }
+            else
+            {
+                actRes.IsValid = false;
+                actRes.Message = "Favorito já existente.";
+            }
+
+            return actRes;
         }
+
+        private FavoriteViewModel convertFavorite(Favorite input)
+        {
+            FavoriteViewModel view = new FavoriteViewModel();
+            //MapModeltoViewModel
+            {
+                view.Id = input.Id;
+                view.Description = input.Description;
+                view.Language = input.Language;
+                view.UpdateLast = input.UpdateLast;
+                view.Owner = input.Owner;
+                view.Name = input.Name;
+            }
+
+            return view;
+        }
+
     }
 }

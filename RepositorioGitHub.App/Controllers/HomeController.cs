@@ -55,27 +55,28 @@ namespace RepositorioGitHub.App.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public ActionResult GetRepositorie(ActionResult<RepositoryViewModel> view)
+
+        public ActionResult DetailsRepository(long id, string login)
         {
-            ActionResult<RepositoryViewModel> model = new ActionResult<RepositoryViewModel>();
-            if (string.IsNullOrEmpty(view.Result?.Name))
-            {
-                model.IsValid = false;
-                model.Message = "O Campo Nome Repositório tem que ser Presenchido";
-                TempData["warning"] = model.Message;
-                return View(model);
-            }
+            ActionResult<GitHubRepositoryViewModel> model = new ActionResult<GitHubRepositoryViewModel>();
 
-             model = _business.GetByName(view.Result.Name);
-
-            if (model.IsValid)
+            if (string.IsNullOrEmpty(login) && id == 0)
             {
-                TempData["success"] = model.Message;
+                return RedirectToAction("GetRepositorie");
             }
             else
             {
-                TempData["warning"] = model.Message;
+
+                model = _business.GetRepository(login, id);
+
+                if (model.IsValid)
+                {
+                    TempData["success"] = model.Message;
+                }
+                else
+                {
+                    TempData["warning"] = model.Message;
+                }
             }
 
             return View(model);
@@ -89,31 +90,32 @@ namespace RepositorioGitHub.App.Controllers
             return View(model);
         }
 
-        public ActionResult DetailsRepository(long id, string login)
+        [HttpPost]
+        public ActionResult GetRepositorie(ActionResult<RepositoryViewModel> view)
         {
-            ActionResult<GitHubRepositoryViewModel> model = new ActionResult<GitHubRepositoryViewModel>();
-
-            if (string.IsNullOrEmpty(login) && id == 0)
+            ActionResult<RepositoryViewModel> model = new ActionResult<RepositoryViewModel>();
+            if (string.IsNullOrEmpty(view.Result?.Name))
             {
-                return RedirectToAction("GetRepositorie");
+                model.IsValid = false;
+                model.Message = "O Campo Nome Repositório tem que ser Presenchido";
+                TempData["warning"] = model.Message;
+                return View(model);
+            }
+
+            model = _business.GetByName(view.Result.Name);
+
+            if (model.IsValid)
+            {
+                TempData["success"] = model.Message;
             }
             else
             {
-                
-                model = _business.GetRepository(login, id);
-
-                if (model.IsValid)
-                {
-                    TempData["success"] = model.Message;
-                }
-                else
-                {
-                    TempData["warning"] = model.Message;
-                }
+                TempData["warning"] = model.Message;
             }
-            
+
             return View(model);
         }
+
 
         public ActionResult Favorite()
         {
@@ -137,23 +139,9 @@ namespace RepositorioGitHub.App.Controllers
         }
 
         [HttpGet]
-        public ActionResult FavoriteSave(long id, string owner, string name, string language, string lastUpdat, string description)
+        public ActionResult FavoriteSave(string owner, string name, string language, string lastUpdat, string description)
         {     
             ActionResult< GitHubRepositoryViewModel> model = new ActionResult<GitHubRepositoryViewModel>();
-
-
-            {
-                model.IsValid = false;
-                model.Message = "Não foi possivel realizar esta operação";
-
-                TempData["warning"] = model.Message;
-
-                _isFavorite = true;
-
-
-
-                return  RedirectToAction("Details/"+id);
-            }
 
 
             if (string.IsNullOrEmpty(owner) && string.IsNullOrEmpty(name) && string.IsNullOrEmpty(language)
@@ -161,15 +149,11 @@ namespace RepositorioGitHub.App.Controllers
             {
                 model.IsValid = false;
                 model.Message = "Não foi possivel realizar esta operação";
-
-                
-                
-
+              
                 return Json(new
                 {
                     Data = model
                 }, JsonRequestBehavior.AllowGet);
-
 
             }
             else
@@ -187,13 +171,13 @@ namespace RepositorioGitHub.App.Controllers
 
               var response = _business.SaveFavoriteRepository(view);
 
-                if (model.IsValid)
+                if (response.IsValid)
                 {
-                    TempData["success"] = model.Message;
+                    TempData["success"] = response.Message;
                 }
                 else
                 {
-                    TempData["warning"] = model.Message;
+                    TempData["warning"] = response.Message;
                 }
 
                 return Json(new
